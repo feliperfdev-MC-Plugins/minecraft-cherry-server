@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:jovial_misc/io_utils.dart';
+import 'package:minecraft_server_protocol/utils/functions/print_color.dart';
 
 class CraftDataTypes {
   static int getVarIntSize(int value) {
@@ -28,15 +29,19 @@ class CraftDataTypes {
     int numRead = 0;
     int result = 0;
     int read;
-    do {
-      read = await input.readByte();
-      int value = (read & 0xb01111111);
-      result |= value << (7 * numRead);
-      numRead++;
-      if (numRead > 5) {
-        throw Exception("VarInt is too big!");
-      }
-    } while ((read & 0xb01111111) != 0);
+    try {
+      do {
+        read = await input.readByte();
+        int value = (read & 0xb01111111);
+        result |= value << (7 * numRead);
+        numRead++;
+        if (numRead > 5) {
+          throw Exception("VarInt is too big!");
+        }
+      } while ((read & 0xb01111111) != 0);
+    } catch (e) {
+      printColor(e.toString(), Color.red);
+    }
     return result;
   }
 

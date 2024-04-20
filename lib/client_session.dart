@@ -42,6 +42,8 @@ class ClientSession {
 
         final packet = PacketRegistry.getPacketById(state, id);
         if (packet != null) {
+          printColor('Packet found!\nTrying to communicate...', Color.green);
+          packet.writeBytesMethod([data]);
           handler.handle(packet);
         } else {
           printColor('PACKET IS NULL!!!', Color.red);

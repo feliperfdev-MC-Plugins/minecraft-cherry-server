@@ -8,6 +8,8 @@ class Packet {
   DataOutputSink get _wrapper =>
       DataOutputSink(StreamController(onListen: () => _buffer));
 
+  Packet();
+
   Packet.writeBytes(List<int> data) {
     _wrapper.writeBytes(data);
   }
@@ -15,6 +17,12 @@ class Packet {
   Packet.writeVarInt(int id) {
     CraftDataTypes.writeVarInt(_wrapper, id);
   }
+
+  void writeBytesMethod(List<int> data) {
+    Packet.writeBytes(data);
+  }
+
+  DataOutputSink get wrapper => _wrapper;
 
   DataInputStream getDataIStream() => DataInputStream(_buffer.stream);
 
