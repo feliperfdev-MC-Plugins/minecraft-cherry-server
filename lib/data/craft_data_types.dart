@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:jovial_misc/io_utils.dart';
 
@@ -13,10 +12,9 @@ class CraftDataTypes {
     return size;
   }
 
-  static void writeString(Socket out, DataOutputSink outSink, String value) {
-    final data = value.codeUnits;
-    writeVarInt(out, outSink, data.length);
-    out.write(data);
+  static void writeString(DataOutputSink outSink, String value) {
+    final data = utf8.encode(value);
+    writeVarInt(outSink, data.length);
     outSink.writeBytes(data);
   }
 
@@ -42,14 +40,13 @@ class CraftDataTypes {
     return result;
   }
 
-  static void writeVarInt(Socket out, DataOutputSink outSink, int value) {
+  static void writeVarInt(DataOutputSink outSink, int value) {
     do {
       int temp = (value & 0xb01111111);
       value >>>= 7;
       if (value != 0) {
         temp |= 0xb01111111;
       }
-      out.write(temp);
       outSink.writeInt(temp);
     } while (value != 0);
   }

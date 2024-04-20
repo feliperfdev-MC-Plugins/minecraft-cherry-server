@@ -15,6 +15,7 @@ class MinecraftServer {
 
   late ServerSocket _server;
   var _isClosed = false;
+  late ClientSession _session;
 
   final pool = Isolate.spawn((_) => {}, '');
 
@@ -26,10 +27,11 @@ class MinecraftServer {
     _server.listen((socket) async {
       printColor("Listening ${socket.remoteAddress.address}", Color.yellow);
       try {
-        final session = ClientSession(socket: socket, server: this);
-        await session.handle();
+        _session = ClientSession(socket: socket, server: this);
+        await _session.handle();
       } catch (e) {
         printColor(e.toString(), Color.red);
+        await _session.close();
       }
     });
   }
@@ -38,7 +40,7 @@ class MinecraftServer {
 
   Future<void> close() async {
     if (!isClosed) {
-      await _server.close();
+      await Future.wait([_server.close(), _session.close()]);
       _isClosed = true;
     }
   }
